@@ -1,0 +1,296 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>人员管理系统</title>
+    <!-- 设置标题中的图标 -->
+    <link type="image/x-icon" rel="icon" href="{% static 'images/ABB_favicon.ico' %}"/>
+    <!-- 引入外部的CSS文件 -->
+    <link type="text/css" rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link type="text/css" rel="stylesheet" href="{% static 'css/index.base.css' %}">
+    <!-- 引入jquery文件 -->
+    <script src="{% static 'js/jquery-3.4.1.min.js' %}"></script>
+</head>
+<body>
+    <!-- 页面标题 -->
+    <div class="header">
+        <div class="header_center">
+            <img src="{% static 'images/ABB.png' %}">
+            <div>人员管理系统</div>
+        </div>
+    </div>
+
+    <!-- 查询区域 -->
+    <div class="query">
+        <form action="" method="POST"> <!-- action=""空为当前页面显示 -->
+            {% csrf_token %} <!-- 增加csrf_token效验 -->
+            <span>请输入查询条件：</span>
+            <input type="text" name="txtquery" id="txtquery" value="{{ input_str }}"> <!-- 保存查询条件input_str -->
+            <input type="submit" class="btn" id="btnquery" value="查询"> <!-- 按钮type=submit自动提交查询 -->
+            <input type="button" class="btn" id="btnadd" value="添加"> <!-- 按钮type=button需要js相应事件 -->
+        </form>
+    </div>
+
+    <!-- 表单区域 -->
+    <div class="formarea add" >
+         <form action="/student/add/" method="post">
+                 {% csrf_token %}
+                 <div style="line-height: 40px;">学号：</div>
+                 <div><input type="text" name="sno" class="form-control" style="width:120px;margin-right: 20px;"></div>
+                 <div style="line-height: 40px;">姓名：</div>
+                 <div><input type="text" name="name" class="form-control" style="width:200px;margin-right: 20px"></div>
+                 <div style="line-height: 40px;">性别：</div>
+                 <div>
+                     <select name="gender" class="form-control" style="width:100px;margin-right: 20px" >
+                         <option value="性别">性别</option>
+                         <option value="男">男</option>
+                         <option value="女">女</option>
+                     </select>
+                 </div>
+                 <div style="line-height: 40px;">出生日期：</div>
+                 <div><input type="text"  name="birthday" class="form-control" style="width:150px;margin-right: 20px"></div>
+                 <div style="line-height: 40px;">手机号码：</div>
+                 <div><input type="text" name="mobile" class="form-control" style="width:200px;margin-right: 20px"></div>
+                 <div style="line-height: 40px; clear:both;margin-top:10px">邮箱：</div>
+                 <div><input type="text"  name="email" class="form-control" style="width:300px;margin: 10px 20px 0 0"></div>
+                 <div style="line-height: 40px;margin-top:10px">地址：</div>
+                 <div><input type="text" name="address" class="form-control" style="width:400px; margin: 10px 20px 0 0"></div>
+                 <div><input type="button" class="btn" id="add_cancel" value="取消" style="width:80px;height: 35px;margin: 10px 0 0 115px;color:white;background-color: #4cae4c"> </div>
+                 <div><input type="submit" class="btn" id="add_commit" value="提交" style="width:80px;height: 35px;margin: 10px 0 0 10px;color:white;background-color: #4cae4c"> </div>
+            </form>
+    </div>
+
+    <div class="formarea update" >
+         <form action="/student/update/" method="post">
+                 {% csrf_token %}
+                 <div style="line-height: 40px;">学号：</div>
+                 <div><input type="text" name="sno" readonly="readonly" class="form-control" style="width:120px;margin-right: 20px;"></div>
+                 <div style="line-height: 40px;">姓名：</div>
+                 <div><input type="text" name="name" class="form-control" style="width:200px;margin-right: 20px"></div>
+                 <div style="line-height: 40px;">性别：</div>
+                 <div>
+                     <select name="gender" class="form-control" style="width:100px;margin-right: 20px" >
+                         <option value="性别">性别</option>
+                         <option value="男">男</option>
+                         <option value="女">女</option>
+                     </select>
+                 </div>
+                 <div style="line-height: 40px;">出生日期：</div>
+                 <div><input type="text"  name="birthday" class="form-control" style="width:150px;margin-right: 20px"></div>
+                 <div style="line-height: 40px;">手机号码：</div>
+                 <div><input type="text" name="mobile" class="form-control" style="width:200px;margin-right: 20px"></div>
+                 <div style="line-height: 40px; clear:both;margin-top:10px">邮箱：</div>
+                 <div><input type="text"  name="email" class="form-control" style="width:300px;margin: 10px 20px 0 0"></div>
+                 <div style="line-height: 40px;margin-top:10px">地址：</div>
+                 <div><input type="text" name="address" class="form-control" style="width:400px; margin: 10px 20px 0 0"></div>
+                 <div><input type="button" class="btn" id="update_cancel" value="取消" style="width:80px;height: 35px;margin: 10px 0 0 115px;color:white;background-color: #4cae4c"> </div>
+                 <div><input type="submit" class="btn" id="update_commit" value="提交" style="width:80px;height: 35px;margin: 10px 0 0 10px;color:white;background-color: #4cae4c"> </div>
+            </form>
+    </div>
+    <!-- 表格区域 -->
+    <div class="content">
+        <table class="table table-striped table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th>序号</th>
+                    <th>学号</th>
+                    <th>姓名</th>
+                    <th>性别</th>
+                    <th>出生日期</th>
+                    <th>手机号码</th>
+                    <th>邮箱地址</th>
+                    <th>家庭住址</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+               <!-- 展示数据库中取到的学生信息
+               [
+               (95001,'张三'，‘女’，‘1900-10-10’， ‘13412344321’，‘zhang@163.com’,'上海'),
+               (),
+               ]
+               -->
+               {% for student in students %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td><!-- 序号，从1开始计数 -->
+                        <td>{{ student.0 }}</td> <!-- 学号(取值格式两个大括号) -->
+                        <td>{{ student.1 }}</td> <!-- 姓名 -->
+                        <td>{{ student.2 }}</td> <!-- 性别 -->
+                        <td>{{ student.3|date:'Y-m-d' }}</td> <!-- 出生日期 -->
+                        <td>{{ student.4 }}</td> <!-- 手机号码 -->
+                        <td>{{ student.5 }}</td> <!-- 邮箱地址 -->
+                        <td>{{ student.6 }}</td> <!-- 家庭住址 -->
+                        <td>
+                            <input type="button" value="修改" id="btnmodify" class="btn btn-sm " style="width:60px;background-color: navy;color:white;">
+                            <input type="button" value="删除" id="btndelete" class="btn btn-sm " style="width:60px;background-color: navy;color:white;">
+                        </td> <!-- 修改和删除的按钮 -->
+                    </tr>
+               {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 页脚区域 -->
+    <div class="footer">
+        版权所有 Dean Ding - 版本v1.0.0.1 - 2021/07/01
+    </div>
+</body>
+</html>
+<!-- 响应事件-->
+<script>
+    //入口函数
+    $(document).ready(function () {
+        //响应输入变化的事件===查询
+        $('#txtquery').bind("input propertychange", function () {
+            //1. 获取当前输入的值
+            //console.log($('#txtquery').val())
+            var input_str = $('#txtquery').val();
+            //2. 实现查询：
+            $('table tbody tr').hide().filter(':contains(' + input_str + ')').show();
+        });
+
+        //响应删除某一个学生信息
+        $('table tbody tr').on('click', '#btndelete', function () {
+            //获取学号和姓名
+            var sno = $(this).parent().parent().children().eq(1).text();
+            var name = $(this).parent().parent().children().eq(2).text();
+            //提醒
+            var result = confirm("是否确认要删除学生：【学号：" + sno + "  姓名：" + name + "】信息吗？");
+            //根据用户选择的值来判断！
+            if (result) {
+                //转到后端！
+                location.href = "student/delete/?sno=" + sno;
+            }
+        });
+
+        //点击“添加”按钮，弹出添加的表单
+        $('#btnadd').click(function () {
+            //把添加的表单弹出
+            $('.add').fadeIn();
+        });
+        //隐藏 添加表单的区域
+        $('#add_cancel').click(function () {
+            //把添加的表单隐藏
+            $('.add').fadeOut();
+        });
+        //点击每一行的“修改”按钮，弹出添加的表单
+        $('table tbody tr').on('click', '#btnmodify', function () {
+            //把添加的表单弹出
+            $('.update').fadeIn();
+            //修改时填充数据
+            $(".update input[name='sno']").val($(this).parent().parent().children().eq(1).text());
+            $(".update input[name='name']").val($(this).parent().parent().children().eq(2).text());
+            $(".update select[name='gender']").val($(this).parent().parent().children().eq(3).text());
+            $(".update input[name='birthday']").val($(this).parent().parent().children().eq(4).text());
+            $(".update input[name='mobile']").val($(this).parent().parent().children().eq(5).text());
+            $(".update input[name='email']").val($(this).parent().parent().children().eq(6).text());
+            $(".update input[name='address']").val($(this).parent().parent().children().eq(7).text());
+
+        });
+        //隐藏 添加表单的区域
+        $('#update_cancel').click(function () {
+            //把修改的表单隐藏
+            $('.update').fadeOut();
+        });
+
+        //添加提交前的校验
+        $('.add form').submit(function () {
+
+            //校验学号：必须要是95开头的5位数字
+            var sno = $(".add input[name='sno']").val().trim();
+            if(sno.match(/^[9][5]\d{3}$/) == null){
+                alert("输入的学号不符合要求！\n 学号的具体要求：必须要是95开头的5位数字！");
+                return false
+            }
+            //校验姓名：必须要是2-5个汉字
+            var name = $(".add input[name='name']").val().trim();
+            if(name.match(/^[\u4e00-\u9fa5]{2,5}$/) == null){
+                alert("输入的姓名不符合要求！\n 姓名的具体要求：必须要是2-5个汉字！");
+                return false
+            }
+            //性别：只能填写男或者女
+            var gender = $(".add select[name='gender']").val().trim();
+            if(gender !="男" && gender !="女"){
+                alert("选择的性别不符合要求！\n 性别的具体要求：只能是男或者女");
+                return false
+            }
+            //出生日期： yyyy-mm-dd
+            var brithday = $(".add input[name='birthday']").val().trim();
+            if(brithday.match(/^\d{4}-\d{2}-\d{2}$/) == null){
+                alert("输入的出生日期不符合要求！\n 出生日期的具体要求：必须要满足yyyy-mm-dd样式！");
+                return false
+            }
+            //手机号码 -- 第1位1，第2位3589，其他的是数字
+            var mobile = $(".add input[name='mobile']").val().trim();
+            if(mobile.match(/^[1][35789]\d{9}$/) == null){
+                alert("输入的手机号码不符合要求！\n 出生日期的具体要求：第1位1，第2位3589，其他的是数字！");
+                return false
+            }
+            //邮箱地址--
+            var email = $(".add input[name='email']").val().trim();
+            if (email.match(/^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/)==null){
+                alert("邮箱地址不符合要求！\n具体要求：邮箱地址不符合规范，必须包含.和@");
+                return false;
+            }
+            //家庭住址--不能为空
+            var address = $(".add input[name='address']").val().trim();
+            if (address.length === 0){
+                alert("家庭住址不能为空！");
+                return false;
+            }
+            //最后！
+            return true;
+        });
+
+        //修改提交前的校验
+         $('.update form').submit(function () {
+
+            //校验学号：必须要是95开头的5位数字
+            var sno = $(".update input[name='sno']").val().trim();
+            if(sno.match(/^[9][5]\d{3}$/) == null){
+                alert("输入的学号不符合要求！\n 学号的具体要求：必须要是95开头的5位数字！");
+                return false
+            }
+            //校验姓名：必须要是2-5个汉字
+            var name = $(".update input[name='name']").val().trim();
+            if(name.match(/^[\u4e00-\u9fa5]{2,5}$/) == null){
+                alert("输入的姓名不符合要求！\n 姓名的具体要求：必须要是2-5个汉字！");
+                return false
+            }
+            //性别：只能填写男或者女
+            var gender = $(".update select[name='gender']").val().trim();
+            if(gender !="男" && gender !="女"){
+                alert("选择的性别不符合要求！\n 性别的具体要求：只能是男或者女");
+                return false
+            }
+            //出生日期： yyyy-mm-dd
+            var brithday = $(".update input[name='birthday']").val().trim();
+            if(brithday.match(/^\d{4}-\d{2}-\d{2}$/) == null){
+                alert("输入的出生日期不符合要求！\n 出生日期的具体要求：必须要满足yyyy-mm-dd样式！");
+                return false
+            }
+            //手机号码 -- 第1位1，第2位3589，其他的是数字
+            var mobile = $(".update input[name='mobile']").val().trim();
+            if(mobile.match(/^[1][35789]\d{9}$/) == null){
+                alert("输入的手机号码不符合要求！\n 出生日期的具体要求：第1位1，第2位3589，其他的是数字！");
+                return false
+            }
+            //邮箱地址--
+            var email = $(".update input[name='email']").val().trim();
+            if (email.match(/^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/)==null){
+                alert("邮箱地址不符合要求！\n具体要求：邮箱地址不符合规范，必须包含.和@");
+                return false;
+            }
+            //家庭住址--不能为空
+            var address = $(".update input[name='address']").val().trim();
+            if (address.length === 0){
+                alert("家庭住址不能为空！");
+                return false;
+            }
+            //最后！
+            return true;
+        });
+
+    });
+</script>
